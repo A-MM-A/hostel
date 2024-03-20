@@ -325,3 +325,22 @@ int studentmenu() {
     }
     return 0;
 }
+
+    char fileline[1000]; // Adjust buffer size as needed
+    char buffer; // No need for an array, just a single char
+    int z = 0;
+    while ((buffer = fgetc(hostels)) != EOF) {
+        if (buffer != '\n') {
+            fileline[z++] = buffer;
+        } else {
+            fileline[z] = '\0'; // Null-terminate the string
+            if (strcmp(fileline, newhostel) == 0) {
+                printf("Hostel already exists try another name");
+                printf("    | Enter the name of new hostel : ");
+                scanf("%s", newhostel);
+            } else {
+                continue;
+            }
+            z = 0; // Reset index for the next line
+        }
+    }

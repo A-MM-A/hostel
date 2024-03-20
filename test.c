@@ -9,10 +9,83 @@ int view_hostel_room();
 int add_hostel_room();
 int login();
 
+/*
+The main function is the starting point.
+It begins by executing login(). Go to where login() is...
+*/
 int main() {
     login();
     return 0;
 }
+
+int add_room() {
+    //enter hostel first before checking its rooms
+    char hostel[100];
+    printf("    |  Enter name of hostel : ");
+    scanf("%s", hostel);
+    char file_path[1000];
+    sprintf(file_path, "hostelsandrooms/%s.txt", hostel);
+    //printf("file path : %s \n",file_path);
+
+    FILE *hostel_file;
+
+    // Open the file in write mode ("r")
+    hostel_file = fopen(file_path, "r");
+
+    // Check if the file was opened successfully
+    if (hostel_file == NULL) {
+        printf("\n");
+        printf("    |  hostel not found                   |\n");
+        printf("    |  do you want to add the hostel?     |\n");
+        printf("    |  [1] Yes                            |\n");
+        printf("    |  [2] No, enter hostel again         |\n");
+        printf("    |  Enter Choice : ");
+        int choice;
+        scanf("%d", &choice);
+        if (choice == 1) {
+            add_hostel();
+        } else if (choice == 2) {
+            add_room();
+        } else {
+            printf("Invalid input, terminating...");
+            return 0;
+        }
+    }
+    // Open the file in write mode ("w")
+    hostel_file = fopen(file_path, "a");
+    //adding new rooms
+    char new_room[100];
+    while (1)
+    {   
+        printf("    |  Enter room name : ");
+        scanf("%s", new_room);
+        printf("    |  Room %s created \n", new_room);
+        strcat(new_room, "\n");
+        /*
+        write a code that shall check if the room actually exists
+        if the room exists the loop should "continue;" i.e name of rooms should be unique
+        */
+        fputs(new_room, hostel_file);
+        printf("    |  do you want to add another room?   |\n");
+        printf("    |  [1] Yes                            |\n");
+        printf("    |  [2] No,                            |\n");
+        printf("    |  Enter option : ");
+        int choice;
+        scanf("%d", &choice);
+        if (choice == 1) {
+            continue;
+        } else if (choice == 2) {
+            break;
+        } else {
+            printf("Invalid input, terminating...");
+            break;
+            return 0;
+        }
+    }
+    
+    return 0;
+}
+
 
 int add_hostel() {
     char newhostel[100];
@@ -29,47 +102,38 @@ int add_hostel() {
     printf("    | Enter the name of new hostel : ");
     scanf("%s", newhostel);
     // Checking if hostel exists already
-    char fileline[1000]; // Adjust buffer size as needed
-    char buffer; // No need for an array, just a single char
-    int z = 0;
-    while ((buffer = fgetc(hostels)) != EOF) {
-        if (buffer != '\n') {
-            fileline[z++] = buffer;
-        } else {
-            fileline[z] = '\0'; // Null-terminate the string
-            if (strcmp(fileline, newhostel) == 0) {
-                printf("Hostel already exists try another name");
-                printf("    | Enter the name of new hostel : ");
-                scanf("%s", newhostel);
-            } else {
-                continue;
-            }
-            z = 0; // Reset index for the next line
+
+    // Check if the hostel already exists in the file
+    char fileline[1000];
+    //int hostel_exists = 0; // Flag to track whether the hostel exists
+    while (fscanf(hostels, "%s", fileline) != EOF) {
+        if (strcmp(fileline, newhostel) == 0) {
+            printf("Hostel already exists. Please enter another name: ");
+            scanf("%s", newhostel);
+            //hostel_exists = 1;
+            rewind(hostels); // Reset file pointer to the beginning for re-reading
         }
     }
+
     // Construct file path for hostel files before adding '\n' to newhostel
     char file_path[1000];
     sprintf(file_path, "hostelsandrooms/%s.txt", newhostel);
+    printf("file path : %s",file_path);
 
     //After reading till the bottom of the file.
     // Append a newline character to fileline
     strcat(newhostel, "\n");
 
-    // Write data to the file
+    // Append newhostel to the hostels file
+    hostels = fopen("hostelsandrooms/hostels.txt", "a");
     fputs(newhostel, hostels);
 
     fclose(hostels);
 
     FILE *new_hostel_file;
 
-    /*
-    // Construct file path for hostel files
-    char file_path[1000];
-    sprintf(file_path, "hostelsandrooms/%s.txt", newhostel);
-    */
-
-    // Open the file in read and write mode ("r+")
-    new_hostel_file = fopen(file_path, "r+");
+    // Open the file in write mode ("w")
+    new_hostel_file = fopen(file_path, "w");
 
     // Check if the file was opened successfully
     if (new_hostel_file == NULL) {
@@ -78,7 +142,7 @@ int add_hostel() {
     }
 
     // Write to the file # to avoid living it empty
-    fprintf(new_hostel_file, "#\n");
+    //fprintf(new_hostel_file, "\n");
 
     // Close the file
     fclose(new_hostel_file);
@@ -107,6 +171,7 @@ int add_hostel() {
     }
     return 0;
 }
+
 
 int view_hostel_room() {
     printf("    |=====================================|\n");
@@ -171,8 +236,28 @@ int view_hostel_room() {
 
     fclose(hostels); // Close hostels file
 
+    while (1) {
+        int choice;
+        printf("    |=====================================|\n");
+        printf("    |           ADMINISTRATOR             |\n");
+        printf("    |=====================================|\n");
+        printf("    | Please select an option:            |\n");
+        printf("    | [0]Menu                             |\n");
+        printf("    | [1]Add new hostel                   |\n");
+        printf("    | Enter option : ");
+        scanf("%d", &choice);
+        if (choice == 0) {
+            adminmenu();
+        } else if (choice == 1) {
+            add_hostel();
+        } else {
+            continue;
+        }
+    }
+
     return 0;
 }
+
 
 int add_hostel_room() {
     //printf("inside add_hostel_room");
@@ -194,7 +279,7 @@ int add_hostel_room() {
     } else if (choice == 2) {
         add_hostel();
     } else if (choice == 3) {
-        //add_room();
+        add_room();
     } else if (choice == 0) {
         adminmenu();
     } else {
@@ -203,6 +288,23 @@ int add_hostel_room() {
     return 0;
 }
 
+/*
+here the user is asked to provide userID and password.
+This function then takes the userID and password and combines them.
+It takes the combined... and checks it up in the administrators.txt.
+administrators.txt is a file that stores credentials for admins and as you guessed it students.txt for students.
+Incase the the credentials provided by the user are found in the administrators.txt the user is given administrative access,
+else if they are found in the students.txt the user is given student access.
+Administrative access means the ability to access the adminsmenu()
+while student access means the ability to access studentmenu()
+I know the security on this is quite simple unless we find a way to encrypt the files before storing them using the credentials provided by the user,
+but that is not the most important task.
+For now let us focus on the following.
+One person should deal with allocate_room()
+the other clear_hostel()
+and reports()
+NB : Add Hostel and Rooms I'm on it.
+*/
 int login() {
     char userid[50];
     char password[50];
@@ -287,6 +389,7 @@ int login() {
     return 1;
 }
 
+
 int adminmenu() {
     int choice;
     printf("    |=====================================|\n");
@@ -317,6 +420,7 @@ int adminmenu() {
     return 0;
 }
 
+
 int studentmenu() {
     int choice;
     printf("    |=====================================|\n");
@@ -334,3 +438,4 @@ int studentmenu() {
     }
     return 0;
 }
+
