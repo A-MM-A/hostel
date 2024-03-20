@@ -1,0 +1,6 @@
+#
+th
+east
+south
+west
+#

@@ -1,0 +1,8 @@
+#
+t
+right
+front
+back
+top
+bottom
+#
