@@ -1,5 +1,2 @@
 tom
 kim
-peter
-john
-alex
