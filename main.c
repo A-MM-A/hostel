@@ -1,65 +1,107 @@
 #include <stdio.h>
 #include <stdbool.h>
-}
+#include <string.h>
 
-// Function to allow a student to book a hostel room
-void book_room(int room_number, int student_id) {
-    if (room_number <= 0 || room_number > MAX_ROOMS) {
-        printf("Invalid room number.\n");
-        return;
-    }
-    if (hostel[room_number - 1].is_allocated) {
-        printf("Room %d is already allocated.\n", room_number);
-}
+#define MAX_STUDENTS 1
+#define MAX_ROOMS 10
+// Student
+struct Student {
+    char name[50];
+    int age;
+    char gender;
+};
 
-// Function to allocate a room
-void allocate_room(int room_number, int student_id) {
-    
-}
+struct Room {
+    int roomNumber;
+    bool booked;
+    struct Student students[MAX_STUDENTS];
+};
 
-// Function to clear hostel
-void clear_hostel() {
-    
-}
+struct Hostel {
+    char name[50];
+    int numberOfRooms;
+    struct Room rooms[MAX_ROOMS];
+};
 
-// Function to output report
-void output_report() {
-    //
-}
-
-void login() {
-    char userid[50];
-    printf("    |=====================================|\n");
-    printf("    |           ADMINISTRATOR             |\n");
-    printf("    |=====================================|\n");
-    printf("    |                                     |\n");
-    printf("    |       Authentication Required       |\n");
-    printf("    |Please provide userID: 41851765");
-    //admin should provide username
-    scanf("%s", userid);
-    //check if userid is of right size.
-    if (userid < 100000000 && userid > 99999) {
-        printf("      |\n");
+// Function to add a room to the hostel
+void addRoom(struct Hostel *hostel, int roomNumber) {
+    if (hostel->numberOfRooms < MAX_ROOMS) {
+        struct Room newRoom = {roomNumber, false};
+        hostel->rooms[hostel->numberOfRooms++] = newRoom;
+        printf("Room %d has been added to the hoste", roomNumber);
     } else {
-        printf("    userID should strictly be a number of 6-8 digits");
-        login();
+        printf("Cannot add more rooms. Maximum capacity reached");
     }
-
-    //admin should provide password
-    scanf("%s", password)
-    //clearing line
-    printf("\r                            \r");
-    printf("    |Please provide password: ********    |\n");
-    printf("    |                                     |\n");
-    printf("    |Verifying Credentials Hold on...     |\n");
-    printf("    |Credentials verified Successfully.   |\n");
-    printf("    |=====================================|\n");
-    return 0;
 }
 
-login();
+// Function to assign a room to a student 
+void assignRoom(struct Hostel *hostel, int roomNumber, struct Student student) {
+    for (int i = 0; i < hostel->numberOfRooms; i++) {
+        if (hostel->rooms[i].roomNumber == roomNumber) {
+            if (!hostel->rooms[i].booked) {
+                hostel->rooms[i].booked = true;
+                hostel->rooms[i].students[0] = student;
+                printf("Room %d has been booked for %s", roomNumber, student.name);
+                return;
+            } else {
+                printf("Room %d is already booked", roomNumber);
+                return;
+            }
+        }
+    }
+    printf("Room %d does not exist in the hostel", roomNumber);
+}
 
-void log_out() {
-    //
+// Function to print available rooms
+void printAvailableRooms(struct Hostel hostel) {
+    printf("Available Rooms:\n");
+    for (int i = 0; i < hostel.numberOfRooms; i++) {
+        if (!hostel.rooms[i].booked) {
+            printf("Room %d\n", hostel.rooms[i].roomNumber);
+        }
+    }
+}
+
+// Function to print booked roomsand students whove booked
+
+void printBookedRooms(struct Hostel hostel) {
+    printf("Booked Rooms:\n");
+    for (int i = 0; i < hostel.numberOfRooms; i++) {
+        if (hostel.rooms[i].booked) {
+            printf("Room %d - Student(s): ", hostel.rooms[i].roomNumber);
+            for (int j = 0; j < MAX_STUDENTS; j++) {
+                if (strlen(hostel.rooms[i].students[j].name) > 0) {
+                    printf("%s ", hostel.rooms[i].students[j].name);
+                }
+            }
+            printf("\n");
+        }
+    }
+}
+
+int main() {
+    struct Hostel myHostel;
+    strcpy(myHostel.name, "My Hostel");
+    myHostel.numberOfRooms = 0;
+
+    // Adding rooms
+    addRoom(&myHostel, 101);
+    addRoom(&myHostel, 102);
+    addRoom(&myHostel, 103);
+
+    // Assigning rooms to students
+    struct Student student1 = {"Alice", 20, 'F'};
+    struct Student student2 = {"Bob", 21, 'M'};
+    struct Student student3 = {"Charlie", 19, 'M'};
+
+    assignRoom(&myHostel, 101, student1);
+    assignRoom(&myHostel, 102, student2);
+    assignRoom(&myHostel, 103, student3);
+
+    // Printing available and booked rooms
+    printAvailableRooms(myHostel);
+    printBookedRooms(myHostel);
+
+    return 0;
 }
 
