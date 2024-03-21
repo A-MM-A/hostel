@@ -1,26 +1,5 @@
 #include <stdio.h>
-
-#define MAX_ROOMS 100
-
-// Structure to represent a hostel room
-typedef struct {
-    int room_number;
-    int is_allocated;
-    int student_id;
-} Room;
-
-// Global array to store hostel rooms
-Room hostel[MAX_ROOMS];
-
-// Function to add hostel rooms
-void add_hostel_rooms(int num_rooms) {
-    // Initialize hostel rooms
-    for (int i = 0; i < num_rooms; i++) {
-        hostel[i].room_number = i + 1;
-        hostel[i].is_allocated = 0;
-        hostel[i].student_id = -1;
-    }
-    printf("%d hostel rooms added successfully.\n", num_rooms);
+#include <stdbool.h>
 }
 
 // Function to allow a student to book a hostel room
