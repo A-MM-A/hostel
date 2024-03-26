@@ -2,6 +2,7 @@
 #include <string.h>
 
 // Function prototypes
+int add_room();
 int adminmenu();
 int studentmenu();
 int add_hostel();
@@ -14,11 +15,15 @@ The main function is the starting point.
 It begins by executing login(). Go to where login() is...
 */
 int main() {
-    login();
+    //login();
+    //adminmenu();
+    add_room();
     return 0;
 }
 
+//start from here next time
 int add_room() {
+    view_hostel_room();
     //enter hostel first before checking its rooms
     char hostel[100];
     printf("    |  Enter name of hostel : ");
@@ -36,7 +41,7 @@ int add_room() {
     if (hostel_file == NULL) {
         printf("\n");
         printf("    |  hostel not found                   |\n");
-        printf("    |  do you want to add the hostel?     |\n");
+        printf("    |  do you want to add '%s'?\n",hostel);
         printf("    |  [1] Yes                            |\n");
         printf("    |  [2] No, enter hostel again         |\n");
         printf("    |  Enter Choice : ");
@@ -57,14 +62,25 @@ int add_room() {
     char new_room[100];
     while (1)
     {   
-        printf("    |  Enter room name : ");
+        printf("    |  Enter new room name : ");
         scanf("%s", new_room);
         printf("    |  Room %s created \n", new_room);
         strcat(new_room, "\n");
-        /*
-        write a code that shall check if the room actually exists
-        if the room exists the loop should "continue;" i.e name of rooms should be unique
-        */
+        
+        char newroom[100];
+        FILE *hostels;
+        hostels = fopen("hostelsandrooms/hostels.txt", "r+"); // Open hostels file
+        char fileline[1000];
+
+        while (fscanf(hostels, "%s", fileline) != EOF) {
+            if (strcmp(fileline, newroom) == 0) {
+                printf("Hostel already exists. Please enter another name: ");
+                scanf("%s", newroom);
+                //hostel_exists = 1;
+                rewind(hostels); // Reset file pointer to the beginning for re-reading
+            }
+        }
+
         fputs(new_room, hostel_file);
         printf("    |  do you want to add another room?   |\n");
         printf("    |  [1] Yes                            |\n");
@@ -92,6 +108,9 @@ int add_hostel() {
     FILE *hostels;
     hostels = fopen("hostelsandrooms/hostels.txt", "r+"); // Open hostels file
 
+    while (1) {
+
+    }
     if (hostels == NULL) {
         printf("Error opening hostels file!\n");
         return 1;
@@ -151,7 +170,7 @@ int add_hostel() {
         printf("    |  do you want to add another hostel? |\n");
         printf("    |  [1] Yes                            |\n");
         printf("    |  [2] No                             |\n");
-        printf("    |  [3] Add room to new hostel         |\n");
+        printf("    |  [3] Add room to '%s'", newhostel);
         printf("    |  Select option :");
         int choice;
         scanf("%d", &choice);
@@ -162,7 +181,7 @@ int add_hostel() {
             adminmenu();
             break;
         } else if (choice == 3) {
-            //add_room();
+            add_room();
             break;
         } else {
             printf("    |      Invalid input try again    |\n");
@@ -203,7 +222,7 @@ int view_hostel_room() {
             printf("    | Hostel: %s\n", line); // Output the hostel name
 
             // Construct file path for rooms file
-            char file_path[1000];
+            char file_path[10000];
             sprintf(file_path, "hostelsandrooms/%s.txt", line);
 
             // Open rooms file
@@ -235,56 +254,38 @@ int view_hostel_room() {
     }
 
     fclose(hostels); // Close hostels file
-
-    while (1) {
-        int choice;
-        printf("    |=====================================|\n");
-        printf("    |           ADMINISTRATOR             |\n");
-        printf("    |=====================================|\n");
-        printf("    | Please select an option:            |\n");
-        printf("    | [0]Menu                             |\n");
-        printf("    | [1]Add new hostel                   |\n");
-        printf("    | Enter option : ");
-        scanf("%d", &choice);
-        if (choice == 0) {
-            adminmenu();
-        } else if (choice == 1) {
-            add_hostel();
-        } else {
-            continue;
-        }
-    }
-
     return 0;
 }
 
 
 int add_hostel_room() {
     //printf("inside add_hostel_room");
+    while (1) {
+        int choice;
+        printf("    |=====================================|\n");
+        printf("    |           ADMINISTRATOR             |\n");
+        printf("    |=====================================|\n");
+        printf("    | Please select an option:            |\n");
+        printf("    | [1]View Available Hostel and Rooms  |\n");
+        printf("    | [2]Add Hostel                       |\n");
+        printf("    | [3]Add room                         |\n");
+        printf("    | [0]Menu                             |\n");
+        printf("    | Type choice: ");
 
-    int choice;
-    printf("    |=====================================|\n");
-    printf("    |           ADMINISTRATOR             |\n");
-    printf("    |=====================================|\n");
-    printf("    | Please select an option:            |\n");
-    printf("    | [1]View Available Hostel and Rooms  |\n");
-    printf("    | [2]Add Hostel                       |\n");
-    printf("    | [3]Add room                         |\n");
-    printf("    | [0]Menu                             |\n");
-    printf("    | Type choice: ");
-
-    scanf("%d", &choice);
-    if (choice == 1) {
-        view_hostel_room();
-    } else if (choice == 2) {
-        add_hostel();
-    } else if (choice == 3) {
-        add_room();
-    } else if (choice == 0) {
-        adminmenu();
-    } else {
-        return 0;
+        scanf("%d", &choice);
+        if (choice == 1) {
+            view_hostel_room();
+        } else if (choice == 2) {
+            add_hostel();
+        } else if (choice == 3) {
+            add_room();
+        } else if (choice == 0) {
+            adminmenu();
+        } else {
+            return 0;
+        }
     }
+    
     return 0;
 }
 
@@ -382,7 +383,7 @@ int login() {
             }
         }
 
-        while ((byte_buffer = fgetc(adminsfile)) != EOF) {
+        while ((byte_buffer = fgetc(studentsfile)) != EOF) {
             if (byte_buffer != '\n') {
                 // Store character in buffer until newline is encountered
                 buffer[buffer_index++] = byte_buffer;
@@ -393,10 +394,10 @@ int login() {
                 // Compare combined user ID and password with buffer
                 if (strcmp(userid, buffer) == 0) {
                     printf("    |Credentials verified Successfully.   |\n");
-                    printf("    |Administrative, access granted       |\n");
+                    printf("    |Student, access granted              |\n");
                     printf("    |=====================================|\n");
-                    fclose(adminsfile);
-                    adminmenu(); // Assuming adminmenu() is defined elsewhere
+                    fclose(studentsfile);
+                    studentmenu(); // Assuming adminmenu() is defined elsewhere
                     return 0;
                 }
 
@@ -404,21 +405,7 @@ int login() {
                 buffer_index = 0;
             }
         }
-        while (fgets(buffer, 400, studentsfile) != NULL) {
-            printf("%s", buffer); // Print the line to the console
-
-            if (strcmp(userid, buffer) != 0) {
-                printf("    |Verification Failed, access denied   |\n");
-                printf("    |=====================================|\n");
-            } else {
-                printf("    |Credentials verified Successfully.   |\n");
-                printf("    |Student, access granted              |\n");
-                printf("    |=====================================|\n");
-                fclose(studentsfile);
-                studentmenu();
-                return 0;
-            }
-        }
+        printf("    |credentials not found in database\n");
     }
     
     login();
